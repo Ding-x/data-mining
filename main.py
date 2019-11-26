@@ -23,58 +23,59 @@ plt.rc('font', family='Arial', weight='400', size=10)
 plt.rc('text', color='#282828')
 plt.rc('savefig', pad_inches=0.3, dpi=300)
 
-df = pd.DataFrame(pd.read_csv('CAvideos.csv', header=0))
-dfNon = pd.DataFrame(pd.read_csv('NonTrendingVideos.csv', header=0))
 
-# Fill na value
-df["description"] = df["description"].fillna(value="")
-dfNon["description"] = dfNon["description"].fillna(value="")
+def basicInfo():
+    basic = df.describe(include=['O'])
+    print("===========================Dataset basic information===========================")
+    print(basic)
+    print("======================================End======================================")
 
 
 def trendingViews():
     fig, ax = plt.subplots()
     _ = sns.distplot(df[df["views"] < 1e6]["views"], kde=False,
                      color=PLOT_COLORS[4], hist_kws={'alpha': 1}, ax=ax)
-    _ = ax.set(xlabel="Views", ylabel="No. of videos")
+    _ = ax.set(title="Trending Video Views", xlabel="Views", ylabel="No. of videos")
 
     plt.show()
 
     majorView = df[df['views'] < 1e6]['views'].count() / df['views'].count() * 100
-    print(majorView)
+
+    print("%.2f percent of the trending videos have the view count less than 1000000" % majorView)
 
 
 def nonTrendingViews():
     fig, ax = plt.subplots()
     _ = sns.distplot(dfNon[dfNon["views"] < 1.5e5]["views"], kde=False,
                      color=PLOT_COLORS[4], hist_kws={'alpha': 1}, ax=ax)
-    _ = ax.set(xlabel="Views", ylabel="No. of videos")
+    _ = ax.set(title="Non-Trending Video Views", xlabel="Views", ylabel="No. of videos")
 
     plt.show()
 
     majorView = dfNon[dfNon['views'] < 1e5]['views'].count() / dfNon['views'].count() * 100
-    print(majorView)
+    print("%.2f percent of the non-trending videos have the view count less than 100000" % majorView)
 
 
 def trendingLikes():
     fig, ax = plt.subplots()
     _ = sns.distplot(df[df["likes"] <= 4e4]["likes"], kde=False,
                      color=PLOT_COLORS[2], hist_kws={'alpha': 1}, ax=ax)
-    _ = ax.set(xlabel="Likes", ylabel="No. of videos")
+    _ = ax.set(title="Trending Video Likes", xlabel="Likes", ylabel="No. of videos")
     plt.show()
 
     majorLikes = df[df['likes'] < 4e4]['likes'].count() / df['likes'].count() * 100
-    print(majorLikes)
+    print("%.2f percent of the trending videos have the like count less than 40000" % majorLikes)
 
 
 def nonTrendingLikes():
     fig, ax = plt.subplots()
     _ = sns.distplot(dfNon[dfNon["likes"] <= 5e3]["likes"], kde=False,
                      color=PLOT_COLORS[2], hist_kws={'alpha': 1}, ax=ax)
-    _ = ax.set(xlabel="Likes", ylabel="No. of videos")
+    _ = ax.set(title="Non-Trending Video Likes",  xlabel="Likes", ylabel="No. of videos")
     plt.show()
 
     majorLikes = dfNon[dfNon['likes'] < 2.5e3]['likes'].count() / dfNon['likes'].count() * 100
-    print(majorLikes)
+    print("%.2f percent of the non-trending videos have the like count less than 2500" % majorLikes)
 
 
 def trendingComments():
@@ -82,11 +83,11 @@ def trendingComments():
     _ = sns.distplot(df[df["comment_count"] < 50000]["comment_count"], kde=False, rug=False,
                      color=PLOT_COLORS[4], hist_kws={'alpha': 1},
                      bins=np.linspace(0, 5e4, 49), ax=ax)
-    _ = ax.set(xlabel="Comment Count", ylabel="No. of videos")
+    _ = ax.set(title="Trending Video Comments", xlabel="Comment Count", ylabel="No. of videos")
     plt.show()
 
     majorComments = df[df['comment_count'] < 5000]['comment_count'].count() / df['comment_count'].count() * 100
-    print(majorComments)
+    print("%.2f percent of the trending videos have the comment count less than 5000" % majorComments)
 
 
 def nonTrendingComments():
@@ -94,16 +95,11 @@ def nonTrendingComments():
     _ = sns.distplot(dfNon[dfNon["comment_count"] < 10000]["comment_count"], kde=False, rug=False,
                      color=PLOT_COLORS[4], hist_kws={'alpha': 1},
                      bins=np.linspace(0, 1e4, 49), ax=ax)
-    _ = ax.set(xlabel="Comment Count", ylabel="No. of videos")
+    _ = ax.set(title="Non-Trending Video Comments",  xlabel="Comment Count", ylabel="No. of videos")
     plt.show()
 
     majorComments = dfNon[dfNon['comment_count'] < 400]['comment_count'].count() / dfNon['comment_count'].count() * 100
-    print(majorComments)
-
-
-def basicInfo():
-    zero = df.describe(include=['O'])
-    print(zero)
+    print("%.2f percent of the non-trending videos have the comment count less than 400" % majorComments)
 
 
 def containsSymbolWord(s):
@@ -124,7 +120,7 @@ def titleContainsSymbol():
     _ = ax.axis('equal')
     _ = ax.set_title('Title Contains Symbols?')
 
-    print(df["contains_symbol"].value_counts(normalize=True))
+    plt.show()
 
 
 def titleLength():
@@ -137,40 +133,51 @@ def titleLength():
 
     fig, ax = plt.subplots()
     _ = ax.scatter(x=df['views'], y=df['title_length'], color=PLOT_COLORS[2], edgecolors="#000000", linewidths=0.5)
-    _ = ax.set(xlabel="Views", ylabel="Title Length")
+    _ = ax.set(title="Title length distribution", xlabel="Views", ylabel="Title Length")
 
     plt.show()
 
 
-def relative():
+def correlation():
     h_labels = [x.replace('_', ' ').title() for x in
                 list(df.select_dtypes(include=['number', 'bool']).columns.values)]
 
     fig, ax = plt.subplots(figsize=(10, 6))
     _ = sns.heatmap(df.corr(), annot=True, xticklabels=h_labels, yticklabels=h_labels,
                     cmap=sns.cubehelix_palette(as_cmap=True), ax=ax)
+    _ = ax.set_title('Data correlation')
+
     plt.show()
 
 
 def titleFrequentWords():
     title_words = list(df["title"].apply(lambda x: x.split()))
     title_words = [x for y in title_words for x in y]
-    cnter = Counter(title_words).most_common(50)
-    print(np.asarray(cnter))
+    counter = Counter(title_words).most_common(50)
+
+    print("==========================Title frequent words top 50==========================")
+    print(np.asarray(counter))
+    print("======================================End======================================")
 
 
 def tagFrequentWords():
     tag_words = list(df["tags"].apply(lambda x: re.sub(r'[^\w\s]', ' ', x).split(" ")))
     tag_words = [x for y in tag_words for x in y]
-    cnter = Counter(tag_words).most_common(50)
-    print(np.asarray(cnter))
+    counter = Counter(tag_words).most_common(50)
+
+    print("========================== Tag frequent words top 50 ==========================")
+    print(np.asarray(counter))
+    print("======================================End======================================")
 
 
 def descriptionFrequentWords():
     description_words = list(df["description"].apply(lambda x: x.split(" ")))
     description_words = [x for y in description_words for x in y]
-    cnter = Counter(description_words).most_common(50)
-    print(np.asarray(cnter))
+    counter = Counter(description_words).most_common(50)
+
+    print("=======================Description frequent words top 50=======================")
+    print(np.asarray(counter))
+    print("======================================End======================================")
 
 
 def channelDistribution():
@@ -180,13 +187,13 @@ def channelDistribution():
     fig, ax = plt.subplots(figsize=(8, 8))
     _ = sns.barplot(x="video_count", y="channel_title", data=cdf,
                     palette=sns.cubehelix_palette(n_colors=60, reverse=True), ax=ax)
-    _ = ax.set(xlabel="No. of videos", ylabel="Channel")
+    _ = ax.set(title="Channel distribution", xlabel="No. of videos", ylabel="Channel")
 
     plt.show()
 
 
 def categoryDistribution():
-    with open("CA_category_id.json") as f:
+    with open("./data/CA_category_id.json") as f:
         categories = json.load(f)["items"]
     cat_dict = {}
     for cat in categories:
@@ -199,7 +206,7 @@ def categoryDistribution():
     _ = sns.barplot(x="category_name", y="No_of_videos", data=cdf,
                     palette=sns.cubehelix_palette(n_colors=16, reverse=True), ax=ax)
     _ = ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
-    _ = ax.set(xlabel="Category", ylabel="No. of videos")
+    _ = ax.set(title="Category distribution", xlabel="Category", ylabel="No. of videos")
     plt.show()
 
 
@@ -215,7 +222,8 @@ def publishingDayDistribution():
     _ = sns.barplot(x="publishing_day", y="No_of_videos", data=cdf,
                     palette=sns.color_palette(['#003f5c', '#374c80', '#7a5195',
                                                '#bc5090', '#ef5675', '#ff764a', '#ffa600'], n_colors=7), ax=ax)
-    _ = ax.set(xlabel="Publishing Day", ylabel="No. of videos")
+    _ = ax.set(title="Publishing Date distribution", xlabel="Publishing Day", ylabel="No. of videos")
+
     plt.show()
 
 
@@ -225,10 +233,32 @@ def publishingTimeDistribution():
     fig, ax = plt.subplots()
     _ = sns.barplot(x="publishing_hour", y="No_of_videos", data=cdf,
                     palette=sns.cubehelix_palette(n_colors=24), ax=ax)
-    _ = ax.set(xlabel="Publishing Hour", ylabel="No. of videos")
+    _ = ax.set(title="Publishing Time distribution", xlabel="Publishing Hour", ylabel="No. of videos")
 
     plt.show()
 
 
-def main():
-    publishingTimeDistribution()
+df = pd.DataFrame(pd.read_csv('./data/CAvideos.csv', encoding='ISO-8859-1'))
+dfNon = pd.DataFrame(pd.read_csv('./data/NonTrendingVideos.csv', encoding='ISO-8859-1'))
+
+# Fill na value
+df["description"] = df["description"].fillna(value="")
+dfNon["description"] = dfNon["description"].fillna(value="")
+
+basicInfo()
+trendingViews()
+nonTrendingViews()
+trendingLikes()
+nonTrendingLikes()
+trendingComments()
+nonTrendingComments()
+titleContainsSymbol()
+titleLength()
+correlation()
+titleFrequentWords()
+tagFrequentWords()
+descriptionFrequentWords()
+channelDistribution()
+categoryDistribution()
+publishingDayDistribution()
+publishingTimeDistribution()

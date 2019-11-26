@@ -1,1 +1,4 @@
-wordcloud
+seaborn
+matplotlib
+numpy
+pandas
