@@ -9,6 +9,7 @@ import csv
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
+from imblearn import under_sampling, over_sampling
 from imblearn.over_sampling import SMOTE
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
