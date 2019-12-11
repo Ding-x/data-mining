@@ -155,9 +155,24 @@ def titleFrequentWords():
     title_words = [x for y in title_words for x in y]
     counter = Counter(title_words).most_common(50)
 
-    print("==========================Title frequent words top 50==========================")
-    print(np.asarray(counter))
-    print("======================================End======================================")
+    x = []
+    y = []
+
+    for index in range(1, len(counter)):
+        x.append(counter[index][0])
+        y.append(counter[index][1])
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    _ = sns.barplot(x, y, palette=sns.cubehelix_palette(n_colors=100, reverse=True), ax=ax)
+    _ = ax.set(title="Frequent words in title", xlabel="Frequent words", ylabel="No. of words")
+    plt.xticks(
+        rotation=60,
+        horizontalalignment='right',
+        fontweight='light',
+        fontsize='small'
+    )
+
+    plt.show()
 
 
 def tagFrequentWords():
@@ -165,9 +180,24 @@ def tagFrequentWords():
     tag_words = [x for y in tag_words for x in y]
     counter = Counter(tag_words).most_common(50)
 
-    print("========================== Tag frequent words top 50 ==========================")
-    print(np.asarray(counter))
-    print("======================================End======================================")
+    x = []
+    y = []
+
+    for index in range(1, len(counter)):
+        x.append(counter[index][0])
+        y.append(counter[index][1])
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    _ = sns.barplot(x, y, palette=sns.cubehelix_palette(n_colors=100, reverse=True), ax=ax)
+    _ = ax.set(title="Frequent words in tag", xlabel="Frequent words", ylabel="No. of words")
+    plt.xticks(
+        rotation=60,
+        horizontalalignment='right',
+        fontweight='light',
+        fontsize='small'
+    )
+
+    plt.show()
 
 
 def descriptionFrequentWords():
@@ -175,16 +205,31 @@ def descriptionFrequentWords():
     description_words = [x for y in description_words for x in y]
     counter = Counter(description_words).most_common(50)
 
-    print("=======================Description frequent words top 50=======================")
-    print(np.asarray(counter))
-    print("======================================End======================================")
+    x = []
+    y = []
+
+    for index in range(len(counter)):
+        x.append(counter[index][0])
+        y.append(counter[index][1])
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    _ = sns.barplot(x, y, palette=sns.cubehelix_palette(n_colors=100, reverse=True), ax=ax)
+    _ = ax.set(title="Frequent words in description", xlabel="Frequent words", ylabel="No. of words")
+    plt.xticks(
+        rotation=60,
+        horizontalalignment='right',
+        fontweight='light',
+        fontsize='small'
+    )
+
+    plt.show()
 
 
 def channelDistribution():
     cdf = df.groupby("channel_title").size().reset_index(name="video_count") \
         .sort_values("video_count", ascending=False).head(60)
 
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(10, 8))
     _ = sns.barplot(x="video_count", y="channel_title", data=cdf,
                     palette=sns.cubehelix_palette(n_colors=60, reverse=True), ax=ax)
     _ = ax.set(title="Channel distribution", xlabel="No. of videos", ylabel="Channel")
